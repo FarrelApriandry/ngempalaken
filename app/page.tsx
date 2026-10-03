@@ -1,69 +1,86 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, FileText, GitBranch, ShieldCheck, TableProperties } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10">
+      <section className="grid gap-8 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm md:grid-cols-2">
+        <div className="flex flex-col justify-center gap-4">
+          <span className="w-fit rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white">
+            Praktikum · M1–M14 · Medium + GitHub
+          </span>
+          <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+            LaprakHub — Pengumpulan &amp; Evaluasi Laporan Praktikum
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-sm leading-relaxed text-zinc-600 md:text-base">
+            Menggantikan Google Form manual dengan portal mandiri mahasiswa,
+            validasi URL otomatis (Regex + GitHub REST API), penanda
+            keterlambatan otomatis, dan matriks rekapitulasi M1–M14 untuk
+            asisten lab.
           </p>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/dashboard/student"
+              className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+            >
+              Portal Praktikan <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              href="/dashboard/assistant"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50"
+            >
+              Matriks Aslab <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid gap-3">
+          <div className="flex gap-3 rounded-xl bg-zinc-50 p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <FileText className="size-4" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">Validasi URL eksplisit</p>
+              <p className="text-sm text-zinc-600">medium.com/@username/slug dan github.com/username/repo.</p>
+            </div>
+          </div>
+          <div className="flex gap-3 rounded-xl bg-zinc-50 p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <GitBranch className="size-4" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">GitHub REST API check</p>
+              <p className="text-sm text-zinc-600">200 public, 404 not found, selain itu private.</p>
+            </div>
+          </div>
+          <div className="flex gap-3 rounded-xl bg-zinc-50 p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <TableProperties className="size-4" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">Matriks M1–M14</p>
+              <p className="text-sm text-zinc-600">Tepat Waktu / Terlambat / Belum / Private Repo + CSV.</p>
+            </div>
+          </div>
+          <div className="flex gap-3 rounded-xl bg-zinc-50 p-4">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <ShieldCheck className="size-4" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold">Anti-duplikat &amp; LATE otomatis</p>
+              <p className="text-sm text-zinc-600">UNIQUE(student, assignment) → kirim ulang = update.</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+      <section className="rounded-xl border border-dashed border-zinc-300 bg-white p-5 text-sm text-zinc-600">
+        <p className="font-semibold text-zinc-900">Akun demo (setelah db:setup + db:seed)</p>
+        <ul className="mt-2 grid gap-1 font-mono text-xs md:grid-cols-3">
+          <li>student@laprakhub.local / student123</li>
+          <li>assistant@laprakhub.local / aslab123</li>
+          <li>admin@laprakhub.local / admin123</li>
+        </ul>
+      </section>
+    </main>
   );
 }
+
