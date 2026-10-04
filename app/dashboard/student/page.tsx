@@ -1,7 +1,8 @@
-import { eq, asc } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { users } from "@/src/db/schema";
-import { getCurrentUser } from "@/src/lib/auth";
+import { getCurrentUser, isDemoFallbackAllowed } from "@/src/lib/auth";
 import { getStudentHistory } from "@/src/actions/submissions";
 import { SubmitForm, type AssignmentOption } from "@/src/components/submit-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
@@ -14,20 +15,23 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard Praktikan — LaprakHub" };
 
 export default async function StudentDashboardPage() {
+  // P0-1: RBAC keras — tanpa session → /login.
+  // P0-2: demo fallback hanya bila ALLOW_DEMO_FALLBACK=true (dev saja).
   let user = await getCurrentUser();
   if (!user) {
-    const demo = await db.select().from(users).where(eq(users.email, "student@laprakhub.local")).limit(1);
-    user = demo[0] ?? null;
+    if (isDemoFallbackAllowed()) {
+      const demo = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, "student@laprakhub.local"))
+        .limit(1);
+      user = demo[0] ?? null;
+    }
+    if (!user) redirect("/login");
   }
-  if (!user) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Belum ada data demo</CardTitle>
-          <CardDescription>Jalankan bun run db:setup &amp;&amp; bun run db:seed lalu login.</CardDescription>
-        </CardHeader>
-      </Card>
-    );
+  if (user.role !== "student" && user.role !== "admin") {
+    // Praktikan saja (admin boleh memantau). Aslab → matriks.
+    redirect("/dashboard/assistant");
   }
 
   const assignmentRows = await db.query.assignments.findMany({
@@ -44,7 +48,13 @@ export default async function StudentDashboardPage() {
     }));
 
   const history = await getStudentHistory(user.id);
-  const gradeRows = await db.query.grades.findMany({});
+  // Least-privilege: hanya nilai milik sendiri (jangan fetch seluruh tabel grades).
+  const submissionIds = history.map((h) => h.id);
+  const gradeRows = submissionIds.length
+    ? await db.query.grades.findMany({
+        where: (g, { inArray }) => inArray(g.submissionId, submissionIds),
+      })
+    : [];
   const gradeBySubmission = new Map(gradeRows.map((g) => [g.submissionId, g]));
   const historyByAssignment = new Map(history.map((h) => [h.assignmentId, h]));
 

@@ -1,63 +1,28 @@
 import { cookies } from "next/headers";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { users, type User } from "@/src/db/schema";
+import {
+  COOKIE_NAME,
+  SESSION_TTL_SECONDS,
+  createSessionValue,
+  getSessionSecret,
+  parseSessionValue,
+} from "@/src/lib/session";
 
-const COOKIE_NAME = "laprakhub_session";
-const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+export type UserRole = "student" | "assistant" | "admin";
 
-function getSecret(): string {
+/** Demo fallback hanya untuk dev eksplisit — default MATI. */
+export function isDemoFallbackAllowed(): boolean {
   return (
-    process.env.SESSION_SECRET ??
-    process.env.AUTH_SECRET ??
-    "dev-only-secret-change-me"
+    process.env.ALLOW_DEMO_FALLBACK === "true" &&
+    process.env.NODE_ENV !== "production"
   );
 }
 
-function sign(payload: string): string {
-  return createHmac("sha256", getSecret()).update(payload).digest("hex");
-}
-
-export type SessionPayload = {
-  userId: string;
-  expiresAt: number;
-};
-
-/** CreateSigned session value: base64url(payload).hex-signature */
-export function createSessionValue(userId: string): string {
-  const payload: SessionPayload = {
-    userId,
-    expiresAt: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
-  };
-  const raw = Buffer.from(JSON.stringify(payload)).toString("base64url");
-  return `${raw}.${sign(raw)}`;
-}
-
-export function parseSessionValue(value: string | undefined): SessionPayload | null {
-  if (!value) return null;
-  const [raw, sig] = value.split(".");
-  if (!raw || !sig) return null;
-  const expected = sign(raw);
-  try {
-    const a = Buffer.from(sig, "hex");
-    const b = Buffer.from(expected, "hex");
-    if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
-  } catch {
-    return null;
-  }
-  try {
-    const payload = JSON.parse(
-      Buffer.from(raw, "base64url").toString("utf8")
-    ) as SessionPayload;
-    if (!payload.userId || payload.expiresAt * 1000 < Date.now()) return null;
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
 export async function setSessionCookie(userId: string): Promise<void> {
+  // Fail-fast di production kalau secret belum diset.
+  getSessionSecret();
   const store = await cookies();
   store.set(COOKIE_NAME, createSessionValue(userId), {
     httpOnly: true,
@@ -73,7 +38,7 @@ export async function clearSessionCookie(): Promise<void> {
   store.delete(COOKIE_NAME);
 }
 
-export async function getSessionPayload(): Promise<SessionPayload | null> {
+export async function getSessionPayload() {
   const store = await cookies();
   return parseSessionValue(store.get(COOKIE_NAME)?.value);
 }
@@ -89,15 +54,36 @@ export async function getCurrentUser(): Promise<User | null> {
   return rows[0] ?? null;
 }
 
-export async function requireUser(roles?: Array<"student" | "assistant" | "admin">): Promise<User> {
+/**
+ * P0-1: penegakan RBAC di server.
+ * - tanpa session → throw UNAUTHORIZED
+ * - role tidak cocok → throw FORBIDDEN
+ * Pages menangkap ini dan `redirect("/login")` / `redirect("/dashboard/...")`.
+ */
+export async function requireUser(
+  roles?: Array<UserRole>
+): Promise<User> {
   const user = await getCurrentUser();
   if (!user) {
     throw new Error("UNAUTHORIZED: silakan login terlebih dahulu.");
   }
-  if (roles && !roles.includes(user.role as "student" | "assistant" | "admin")) {
+  if (roles && !roles.includes(user.role as UserRole)) {
     throw new Error("FORBIDDEN: peran Anda tidak diizinkan.");
   }
   return user;
 }
 
+export async function requireStudent(): Promise<User> {
+  return requireUser(["student"]);
+}
+
+export async function requireStaff(): Promise<User> {
+  return requireUser(["assistant", "admin"]);
+}
+
+export async function requireAdmin(): Promise<User> {
+  return requireUser(["admin"]);
+}
+
 export { COOKIE_NAME };
+

@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { db } from "@/src/db";
-import { getCurrentUser } from "@/src/lib/auth";
+import { users } from "@/src/db/schema";
+import { getCurrentUser, isDemoFallbackAllowed } from "@/src/lib/auth";
 import { resolveCellStatus, type MatrixCell, type MatrixRow } from "@/src/lib/matrix";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { MatrixGrid } from "@/src/components/matrix-grid";
@@ -10,7 +13,23 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Matriks Aslab M1–M14 — LaprakHub" };
 
 export default async function AssistantDashboardPage() {
-  await getCurrentUser().catch(() => null);
+  // P0-1: hanya aslab/admin. Praktikan → portalnya. Belum login → /login.
+  // P0-2: demo fallback hanya bila ALLOW_DEMO_FALLBACK=true (dev saja).
+  let staff = await getCurrentUser();
+  if (!staff) {
+    if (isDemoFallbackAllowed()) {
+      const demo = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, "assistant@laprakhub.local"))
+        .limit(1);
+      staff = demo[0] ?? null;
+    }
+    if (!staff) redirect("/login");
+  }
+  if (staff.role !== "assistant" && staff.role !== "admin") {
+    redirect("/dashboard/student");
+  }
 
   const [assignmentRows, studentRows, submissionRows, gradeRows] = await Promise.all([
     db.query.assignments.findMany({ orderBy: (a, { asc }) => [asc(a.moduleNumber)] }),

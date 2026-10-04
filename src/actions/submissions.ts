@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/src/db";
 import { assignments, submissions } from "@/src/db/schema";
-import { getCurrentUser } from "@/src/lib/auth";
+import { requireUser } from "@/src/lib/auth";
 import { checkGithubRepo } from "@/src/lib/github";
 import { normalizeUrl, submissionInputSchema } from "@/src/lib/validators";
 
@@ -35,17 +35,8 @@ export async function submitLaprak(input: {
     return { ok: false, message: first?.message ?? "Input tidak valid." };
   }
 
-  const sessionUser = await getCurrentUser();
-  let studentId = sessionUser?.id ?? null;
-  if (!studentId) {
-    const demo = await db.query.users.findFirst({
-      where: (u, { eq }) => eq(u.email, "student@laprakhub.local"),
-    });
-    if (!demo) {
-      return { ok: false, message: "Silakan login terlebih dahulu sebagai Praktikan." };
-    }
-    studentId = demo.id;
-  }
+  const sessionUser = await requireUser(["student", "admin"]);
+  const studentId = sessionUser.id;
 
   const assignment = await db.query.assignments.findFirst({
     where: (a, { eq }) => eq(a.id, parsed.data.assignmentId),
@@ -122,6 +113,11 @@ export async function submitLaprak(input: {
 }
 
 export async function getStudentHistory(studentId: string) {
+  // P0-1: cegah praktikan mengintip riwayat orang lain via action langsung.
+  const caller = await requireUser(["student", "assistant", "admin"]);
+  if (caller.role === "student" && caller.id !== studentId) {
+    throw new Error("FORBIDDEN: Anda hanya boleh melihat riwayat sendiri.");
+  }
   return db.query.submissions.findMany({
     where: (s, { eq }) => eq(s.studentId, studentId),
     with: { assignment: true },
@@ -130,6 +126,8 @@ export async function getStudentHistory(studentId: string) {
 }
 
 export async function checkGithubAction(githubUrl: string) {
+  // P0-1: batasi pemakaian GitHub API ke user login (cegah abuse anonim).
+  await requireUser(["student", "assistant", "admin"]);
   const { checkGithubRepo } = await import("@/src/lib/github");
   const { normalizeUrl, GITHUB_URL_RE } = await import("@/src/lib/validators");
   const clean = normalizeUrl(githubUrl ?? "");
