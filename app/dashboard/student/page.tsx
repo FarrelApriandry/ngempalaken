@@ -73,8 +73,8 @@ export default async function StudentDashboardPage() {
               {assignmentRows.map((a) => {
                 const sub = historyByAssignment.get(a.id);
                 return (
-                  <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm">
-                    <span className="font-medium">M{a.moduleNumber} — {a.title}</span>
+                  <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-900">
+                    <span className="font-medium text-zinc-900">M{a.moduleNumber} — {a.title}</span>
                     <span className="flex items-center gap-2 text-xs text-zinc-600">
                       <span>{formatDateTime(a.deadline)}</span>
                       {!a.isActive && <Badge variant="secondary">Nonaktif</Badge>}
@@ -104,7 +104,7 @@ export default async function StudentDashboardPage() {
                 {history.map((s) => {
                   const grade = gradeBySubmission.get(s.id);
                   return (
-                    <div key={s.id} className="rounded-lg border border-zinc-200 p-3 text-sm">
+                    <div key={s.id} className="rounded-lg border border-zinc-200 p-3 text-sm text-zinc-900">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="font-semibold">{s.assignment?.title ?? s.assignmentId}</span>
                         <span className="flex gap-1.5">

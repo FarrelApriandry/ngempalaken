@@ -24,23 +24,23 @@ export function MatrixGrid({ rows, modules }: { rows: MatrixRow[]; modules: Modu
         <Input placeholder="Cari NPM / nama / email…" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
         <span className="text-xs text-zinc-500">{filtered.length} praktikan · 🟢 Tepat Waktu · 🟡 Terlambat · ⚠️ Private Repo · 🔴 Belum</span>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white">
-        <table className="min-w-[1100px] w-full text-center text-xs">
+      <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white text-zinc-900">
+        <table className="min-w-[1100px] w-full text-center text-xs text-zinc-900">
           <thead>
-            <tr className="border-b border-zinc-200 bg-zinc-50">
-              <th className="sticky left-0 bg-zinc-50 px-3 py-2 text-left">NPM · Nama</th>
+            <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-900">
+              <th className="sticky left-0 bg-zinc-50 px-3 py-2 text-left text-zinc-900">NPM · Nama</th>
               {modules.map((m) => (
-                <th key={m.id} className="px-2 py-2" title={`${m.title} · ${formatDateTime(m.deadline)}`}>M{m.moduleNumber}</th>
+                <th key={m.id} className="px-2 py-2 text-zinc-900" title={`${m.title} · ${formatDateTime(m.deadline)}`}>M{m.moduleNumber}</th>
               ))}
-              <th className="px-2 py-2">Terkumpul</th>
-              <th className="px-2 py-2">Rata-rata</th>
+              <th className="px-2 py-2 text-zinc-900">Terkumpul</th>
+              <th className="px-2 py-2 text-zinc-900">Rata-rata</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((r) => (
-              <tr key={r.studentId} className="border-b border-zinc-100 hover:bg-zinc-50/60">
-                <td className="sticky left-0 bg-white px-3 py-1.5 text-left">
-                  <p className="font-mono font-semibold">{r.npmNip}</p>
+              <tr key={r.studentId} className="border-b border-zinc-100 text-zinc-900 hover:bg-zinc-50/60">
+                <td className="sticky left-0 bg-white px-3 py-1.5 text-left text-zinc-900">
+                  <p className="font-mono font-semibold text-zinc-900">{r.npmNip}</p>
                   <p className="truncate text-[11px] text-zinc-600">{r.fullName}</p>
                 </td>
                 {modules.map((m) => {
@@ -61,8 +61,8 @@ export function MatrixGrid({ rows, modules }: { rows: MatrixRow[]; modules: Modu
                     </td>
                   );
                 })}
-                <td className="px-2">{r.submittedCount}/{modules.length}</td>
-                <td className="px-2 font-semibold">{r.avgScore ?? "—"}</td>
+                <td className="px-2 text-zinc-900">{r.submittedCount}/{modules.length}</td>
+                <td className="px-2 font-semibold text-zinc-900">{r.avgScore ?? "—"}</td>
               </tr>
             ))}
           </tbody>
@@ -76,7 +76,7 @@ export function MatrixGrid({ rows, modules }: { rows: MatrixRow[]; modules: Modu
               <DialogClose onClick={() => setSel(null)} />
             </DialogHeader>
             <DialogContent>
-              <div className="grid gap-2 text-sm">
+              <div className="grid gap-2 text-sm text-zinc-900">
                 <p><span className="text-zinc-500">Mahasiswa:</span> {sel.row.fullName} ({sel.row.email})</p>
                 <p><span className="text-zinc-500">Modul:</span> {sel.mod.title} · Deadline {formatDateTime(sel.mod.deadline)}</p>
                 <p><span className="text-zinc-500">Status:</span> {cellMeta(selCell.status).emoji} {cellMeta(selCell.status).label} · {selCell.isLate ? "Terlambat" : "Tepat waktu"}</p>

@@ -95,13 +95,13 @@ export function LoginForm() {
           </Button>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="text-zinc-500">Isi cepat:</span>
-            <button type="button" onClick={() => fillAs("student")} className="rounded-full bg-zinc-100 px-2.5 py-1 hover:bg-zinc-200">
+            <button type="button" onClick={() => fillAs("student")} className="rounded-full bg-zinc-100 px-2.5 py-1 text-zinc-900 hover:bg-zinc-200">
               Praktikan
             </button>
-            <button type="button" onClick={() => fillAs("assistant")} className="rounded-full bg-zinc-100 px-2.5 py-1 hover:bg-zinc-200">
+            <button type="button" onClick={() => fillAs("assistant")} className="rounded-full bg-zinc-100 px-2.5 py-1 text-zinc-900 hover:bg-zinc-200">
               Aslab
             </button>
-            <button type="button" onClick={() => fillAs("admin")} className="rounded-full bg-zinc-100 px-2.5 py-1 hover:bg-zinc-200">
+            <button type="button" onClick={() => fillAs("admin")} className="rounded-full bg-zinc-100 px-2.5 py-1 text-zinc-900 hover:bg-zinc-200">
               Admin
             </button>
           </div>

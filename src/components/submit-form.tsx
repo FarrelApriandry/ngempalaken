@@ -71,7 +71,7 @@ export function SubmitForm({ assignments }: { assignments: AssignmentOption[] })
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="grid gap-2">
         <Label htmlFor="modul">Modul (M1–M14)</Label>
-        <select id="modul" value={assignmentId} onChange={(e) => setAssignmentId(e.target.value)} className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm">
+        <select id="modul" value={assignmentId} onChange={(e) => setAssignmentId(e.target.value)} className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900">
           {assignments.map((a) => (
             <option key={a.id} value={a.id}>M{a.moduleNumber} — {a.title}</option>
           ))}

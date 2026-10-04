@@ -13,12 +13,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900">
         <nav className="flex items-center gap-1 text-sm">
-          <Link href="/dashboard/student" className="rounded-md px-3 py-1.5 hover:bg-zinc-100">
+          <Link href="/dashboard/student" className="rounded-md px-3 py-1.5 text-zinc-900 hover:bg-zinc-100">
             Praktikan
           </Link>
-          <Link href="/dashboard/assistant" className="rounded-md px-3 py-1.5 hover:bg-zinc-100">
+          <Link href="/dashboard/assistant" className="rounded-md px-3 py-1.5 text-zinc-900 hover:bg-zinc-100">
             Aslab (M1–M14)
           </Link>
         </nav>

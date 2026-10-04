@@ -35,7 +35,7 @@ export function Dialog({
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white text-zinc-900 shadow-xl"
       >
         {children}
       </div>
@@ -56,7 +56,7 @@ export function DialogTitle({
   className,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("text-lg font-semibold", className)} {...props} />;
+  return <h2 className={cn("text-lg font-semibold text-zinc-900", className)} {...props} />;
 }
 
 export function DialogClose({ onClick }: { onClick: () => void }) {

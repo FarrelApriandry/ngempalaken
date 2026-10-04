@@ -29,7 +29,7 @@ export function GradeForm({ submissionId, initialScore, initialFeedback }: { sub
     }
   }
   return (
-    <form onSubmit={onSave} className="grid gap-3 rounded-lg bg-zinc-50 p-3">
+    <form onSubmit={onSave} className="grid gap-3 rounded-lg bg-zinc-50 p-3 text-zinc-900">
       <div className="grid gap-2">
         <Label htmlFor={`score-${submissionId}`}>Nilai (0–100)</Label>
         <Input id={`score-${submissionId}`} type="number" min={0} max={100} required value={score} onChange={(e) => setScore(e.target.value)} placeholder="85" />
