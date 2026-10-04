@@ -72,6 +72,16 @@ END $$`,
   `CREATE INDEX IF NOT EXISTS "submissions_student_idx" ON "submissions" ("student_id")`,
   `CREATE INDEX IF NOT EXISTS "submissions_assignment_idx" ON "submissions" ("assignment_id")`,
   `CREATE INDEX IF NOT EXISTS "assignments_module_idx" ON "assignments" ("module_number")`,
+  // P0-5: defense-in-depth — aktifkan RLS di semua tabel app.
+  // Koneksi app memakai single owner (neondb_owner) yang bypass RLS, jadi tidak ada
+  // perubahan perilaku; RLS melindungi bila kelak ada role unprivileged / kredensial bocor.
+  // Idempotent, aman dijalankan ulang via db:setup. Branch production sudah di-ENABLE via SQL langsung.
+  `ALTER TABLE "users" ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE "courses" ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE "course_enrollments" ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE "assignments" ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE "submissions" ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE "grades" ENABLE ROW LEVEL SECURITY`,
 ];
 
 async function main() {
